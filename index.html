@@ -1,0 +1,1280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="A daily estimation puzzle. One question a day, the same one for everyone: how many of one thing does it take to equal another?">
+<meta name="theme-color" content="#E9ECE2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101F1D" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%8A%3C/text%3E%3C/svg%3E">
+<meta property="og:title" content="How Many Oranges?">
+<meta property="og:description" content="A daily estimation puzzle. One question a day, the same one for everyone: how many of one thing does it take to equal another?">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<style>
+  /* Stands in for the skeleton the Artifact viewer supplies, so the hosted
+     copy renders identically: safe-area padding for notched phones, no body
+     margin, and images that never overflow their column. */
+  :root{
+    color-scheme: light dark;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html,body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<title>How Many Oranges</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap">
+<style>
+:root{
+  --ground:#E9ECE2;
+  --surface:#FFFDF7;
+  --surface-2:#DDE3D5;
+  --ink:#16302C;
+  --ink-soft:#56675F;
+  --line:#C3CCBA;
+  --line-strong:#9EAB94;
+  --accent:#E09612;
+  --accent-ink:#5E3D00;
+  --coral:#D04E35;
+  --good:#2C7A58;
+  --shadow:0 1px 0 rgba(22,48,44,.10), 0 10px 28px -18px rgba(22,48,44,.55);
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#101F1D;
+    --surface:#172D29;
+    --surface-2:#1F3C35;
+    --ink:#E9F0E6;
+    --ink-soft:#99AEA4;
+    --line:#2C4F47;
+    --line-strong:#3E6A5F;
+    --accent:#F0B23E;
+    --accent-ink:#17211A;
+    --coral:#EC7257;
+    --good:#4FB084;
+    --shadow:0 1px 0 rgba(0,0,0,.25), 0 12px 30px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101F1D;
+  --surface:#172D29;
+  --surface-2:#1F3C35;
+  --ink:#E9F0E6;
+  --ink-soft:#99AEA4;
+  --line:#2C4F47;
+  --line-strong:#3E6A5F;
+  --accent:#F0B23E;
+  --accent-ink:#17211A;
+  --coral:#EC7257;
+  --good:#4FB084;
+  --shadow:0 1px 0 rgba(0,0,0,.25), 0 12px 30px -18px rgba(0,0,0,.9);
+}
+
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+
+.wrap{
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding-inline:16px;
+  padding-block:24px;
+}
+.card{
+  width:100%;
+  max-width:620px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+/* ---- shared bits ---- */
+.eyebrow{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  font-weight:600;
+  color:var(--ink-soft);
+}
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 20px;
+  border-bottom:1px solid var(--line);
+  background:var(--surface-2);
+}
+.pips{display:flex;gap:5px;align-items:center}
+.pip{width:9px;height:9px;border-radius:50%;background:var(--line-strong);opacity:.45}
+.pip.done{opacity:1;background:var(--good)}
+.pip.miss{opacity:1;background:var(--line-strong)}
+.pip.now{opacity:1;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent)}
+.score-readout{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.score-readout span{color:var(--ink-soft);font-weight:500}
+
+.body{padding:24px 20px 26px}
+@media (min-width:520px){ .body{padding:30px 32px 32px} }
+
+h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.01em}
+
+/* ---- title screen ---- */
+.hero-mark{
+  font-size:34px;
+  line-height:1;
+  letter-spacing:-.04em;
+  margin-bottom:14px;
+}
+.title-h1{font-size:clamp(30px,7vw,42px);line-height:1.04;margin-bottom:10px}
+.title-h1 em{font-style:italic;color:var(--accent)}
+.lede{color:var(--ink-soft);max-width:44ch;margin:0 0 4px}
+.sample{
+  margin:20px 0 26px;
+  padding:14px 16px;
+  border-left:3px solid var(--accent);
+  background:var(--surface-2);
+  border-radius:0 10px 10px 0;
+  font-family:"Fraunces",Georgia,serif;
+  font-size:17px;
+  line-height:1.35;
+}
+.ages{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.age-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;min-height:104px;text-align:center;
+  padding:22px 4px;
+  background:var(--surface);
+  border:1.5px solid var(--line);
+  border-radius:14px;
+  cursor:pointer;
+  transition:border-color .14s ease, transform .14s ease, background .14s ease;
+}
+.age-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.age-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.age-btn b{
+  font-family:"Fraunces",Georgia,serif;
+  font-size:clamp(17px,4.4vw,25px);
+  line-height:1.1;
+  white-space:nowrap;
+}
+.age-btn:hover b{color:var(--ink)}
+.best-line{margin-top:18px;font-size:13px;color:var(--ink-soft)}
+
+/* ---- question ---- */
+.unit-chip{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:4px 11px 4px 8px;
+  border-radius:999px;
+  background:var(--accent);
+  color:var(--accent-ink);
+  font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+}
+.question{
+  font-family:"Fraunces",Georgia,serif;
+  font-size:clamp(22px,5.2vw,30px);
+  line-height:1.2;
+  margin:16px 0 0;
+}
+.backbtn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:none;border:none;
+  padding:8px 11px 8px 7px;margin:-8px 0 -8px -7px;
+  border-radius:9px;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+  color:var(--ink-soft);cursor:pointer;
+  transition:color .12s ease, background .12s ease;
+}
+.backbtn:hover{color:var(--ink);background:var(--surface)}
+.backbtn:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.backbtn .chev{font-size:16px;line-height:1;margin-top:-2px;letter-spacing:0}
+.share{
+  margin-top:24px;
+  padding-top:18px;
+  border-top:1px solid var(--line);
+}
+.share-text{
+  margin:0 0 12px;
+  padding:13px 14px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:11px;
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+  font-size:13px;
+  line-height:1.6;
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-x:auto;
+  color:var(--ink);
+}
+.share-note{margin:10px 0 0;font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+.btn.ghost.wide{margin-top:14px}
+.orients{
+  margin:9px 0 0;
+  font-size:12.5px;
+  line-height:1.45;
+  color:var(--ink-soft);
+  letter-spacing:.01em;
+}
+.glyphs{font-size:30px;line-height:1;margin-top:18px;letter-spacing:.06em}
+.glyphs .arrow{font-size:17px;color:var(--ink-soft);margin:0 8px;font-family:"Archivo",sans-serif}
+
+.hint{
+  margin-top:18px;
+  font-size:14px;
+  color:var(--ink-soft);
+  border-top:1px dashed var(--line);
+  padding-top:14px;
+}
+.hint b{color:var(--ink);font-weight:600}
+.hint-btn{
+  background:none;border:none;padding:0;
+  color:var(--ink-soft);text-decoration:underline;
+  text-underline-offset:3px;cursor:pointer;font-size:14px;
+}
+
+/* ---- guess controls ---- */
+.guessbox{margin-top:26px}
+.guess-display{
+  font-family:"Fraunces",Georgia,serif;
+  font-size:clamp(34px,9vw,46px);
+  font-weight:700;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+  margin-bottom:2px;
+}
+.guess-unit{font-size:13px;color:var(--ink-soft);margin-bottom:16px}
+
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:30px;background:transparent;cursor:grab;margin:0;
+}
+input[type=range]:active{cursor:grabbing}
+input[type=range]::-webkit-slider-runnable-track{
+  height:8px;border-radius:999px;
+  background:linear-gradient(90deg,var(--surface-2),var(--line-strong));
+  border:1px solid var(--line);
+}
+input[type=range]::-moz-range-track{
+  height:8px;border-radius:999px;
+  background:linear-gradient(90deg,var(--surface-2),var(--line-strong));
+  border:1px solid var(--line);
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:30px;height:30px;margin-top:-12px;
+  border-radius:50%;
+  background:var(--accent);
+  border:3px solid var(--surface);
+  box-shadow:0 2px 8px -2px rgba(0,0,0,.45);
+}
+input[type=range]::-moz-range-thumb{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--accent);border:3px solid var(--surface);
+  box-shadow:0 2px 8px -2px rgba(0,0,0,.45);
+}
+input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-radius:999px}
+
+.ticks{
+  display:flex;justify-content:space-between;
+  font-size:11px;color:var(--ink-soft);
+  font-variant-numeric:tabular-nums;
+  margin-top:-2px;letter-spacing:.04em;
+}
+
+.numrow{display:flex;gap:10px;align-items:stretch;margin-top:4px}
+input[type=text].numinput{
+  flex:1;min-width:0;
+  font-family:"Fraunces",Georgia,serif;
+  font-size:26px;font-weight:700;
+  font-variant-numeric:tabular-nums;
+  padding:12px 14px;
+  background:var(--surface-2);
+  color:var(--ink);
+  border:1.5px solid var(--line);
+  border-radius:11px;
+}
+input[type=text].numinput:focus{outline:3px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+input[type=text].numinput::placeholder{color:var(--ink-soft);font-weight:500;opacity:.7}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 22px;
+  background:var(--ink);
+  color:var(--surface);
+  border:1.5px solid var(--ink);
+  border-radius:11px;
+  font-weight:600;font-size:15px;
+  cursor:pointer;
+  transition:transform .12s ease, opacity .12s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+.btn.wide{width:100%;margin-top:18px}
+
+/* ---- reveal ---- */
+.verdict{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.verdict h2{font-size:clamp(24px,6vw,32px)}
+.verdict .pts{
+  font-variant-numeric:tabular-nums;font-weight:700;font-size:14px;
+  padding:3px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-soft);
+}
+.tone-good h2{color:var(--good)}
+.tone-warn h2{color:var(--accent)}
+.tone-bad h2{color:var(--coral)}
+
+.answer-line{
+  font-family:"Fraunces",Georgia,serif;
+  font-size:clamp(20px,5vw,26px);
+  line-height:1.25;
+  margin:14px 0 0;
+}
+.answer-line b{color:var(--accent)}
+
+/* log number line */
+.scale{margin:26px 0 6px}
+.scale-track{
+  position:relative;height:10px;border-radius:999px;
+  background:var(--surface-2);border:1px solid var(--line);
+}
+.scale-band{
+  position:absolute;top:-1px;bottom:-1px;
+  background:color-mix(in srgb, var(--good) 32%, transparent);
+  border-left:1px solid var(--good);border-right:1px solid var(--good);
+  border-radius:3px;
+}
+.marker{position:absolute;top:50%;transform:translate(-50%,-50%);}
+.marker .dot{
+  width:16px;height:16px;border-radius:50%;
+  border:3px solid var(--surface);
+  box-shadow:0 1px 5px -1px rgba(0,0,0,.5);
+}
+.marker.you .dot{background:var(--coral)}
+.marker.ans .dot{background:var(--ink)}
+.marker .tag{
+  position:absolute;left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-size:11px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+}
+.marker.you .tag{top:16px;color:var(--coral)}
+.marker.ans .tag{bottom:16px;color:var(--ink)}
+.scale-ends{
+  display:flex;justify-content:space-between;
+  font-size:11px;color:var(--ink-soft);margin-top:30px;
+  font-variant-numeric:tabular-nums;letter-spacing:.04em;
+}
+
+.math{
+  margin-top:22px;
+  border-top:1px solid var(--line);
+  padding-top:16px;
+  display:grid;gap:8px;
+}
+.math-row{display:flex;gap:10px;align-items:baseline;font-size:14.5px}
+.math-row .g{font-size:17px;line-height:1;width:24px;flex:none;text-align:center}
+.math-row b{font-weight:600}
+.math .sum{
+  font-variant-numeric:tabular-nums;
+  color:var(--ink-soft);font-size:13.5px;
+  padding-top:4px;border-top:1px dashed var(--line);margin-top:2px;
+}
+.fact{
+  margin-top:14px;font-size:13.5px;color:var(--ink-soft);
+  background:var(--surface-2);border-radius:10px;padding:10px 13px;
+}
+.fact b{color:var(--ink);font-weight:600;letter-spacing:.1em;font-size:10.5px;text-transform:uppercase}
+
+/* ---- summary ---- */
+.final{font-size:clamp(44px,13vw,64px);font-family:"Fraunces",Georgia,serif;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.final-sub{color:var(--ink-soft);margin-top:4px}
+.recap{margin-top:24px;display:grid;gap:0;border-top:1px solid var(--line)}
+.recap-row{
+  display:flex;gap:12px;align-items:center;
+  padding:11px 2px;border-bottom:1px solid var(--line);
+  font-size:14px;
+}
+.recap-row .g{font-size:18px;line-height:1;flex:none}
+.recap-row .txt{flex:1;min-width:0;color:var(--ink-soft);line-height:1.3}
+.recap-row .txt b{color:var(--ink);font-weight:600}
+.recap-row .rk{
+  font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  flex:none;
+}
+.btnrow{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.btnrow .btn{flex:1;min-width:140px}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+
+<div class="wrap">
+  <main class="card" id="card"></main>
+</div>
+
+<script>
+/* =========================================================================
+   HOW MANY ORANGES — an estimation game
+   Every measurement below is a real, checkable figure.
+   SI under the hood (m, kg, L, s); displayed in US customary.
+   Fields: n = name in sentence, p = plural for counting, e = glyph,
+           f = familiarity (0 everyday / 1 known / 2 famous-or-exotic),
+           h = height m, w = mass kg, v = volume L, t = duration s
+   ========================================================================= */
+const OBJECTS = [
+  /* ---------- animals ---------- */
+  {n:"a ladybug",p:"ladybugs",e:"🐞",f:0,h:0.006,w:0.00002},
+  {n:"a honeybee",p:"honeybees",e:"🐝",f:0,h:0.012,w:0.0001,fact:"A honeybee makes about one twelfth of a teaspoon of honey in its whole life."},
+  {n:"a hummingbird",p:"hummingbirds",e:"🐦",f:1,h:0.08,w:0.004,fact:"A hummingbird's heart beats more than 1,200 times a minute."},
+  {n:"a mouse",p:"mice",e:"🐭",f:0,h:0.07,w:0.021},
+  {n:"a baby chick",p:"baby chicks",e:"🐤",f:0,h:0.08,w:0.04},
+  {n:"a duckling",p:"ducklings",e:"🦆",f:0,h:0.1,w:0.05},
+  {n:"a hamster",p:"hamsters",e:"🐹",f:0,h:0.07,w:0.12},
+  {n:"a guinea pig",p:"guinea pigs",e:"🐹",f:0,h:0.1,w:1},
+  {n:"a chinchilla",p:"chinchillas",e:"🐀",f:1,h:0.15,w:0.5},
+  {n:"a rabbit",p:"rabbits",e:"🐰",f:0,h:0.2,w:2},
+  {n:"a cat",p:"cats",e:"🐈",f:0,h:0.25,w:4.5},
+  {n:"a corgi",p:"corgis",e:"🐕",f:0,h:0.27,w:12},
+  {n:"a red panda",p:"red pandas",e:"🦝",f:1,h:0.28,w:5,fact:"Red pandas wrap their bushy tails around themselves like a blanket."},
+  {n:"a sloth",p:"sloths",e:"🦥",f:1,h:0.6,w:5,fact:"A sloth can take a full month to digest one meal."},
+  {n:"a koala",p:"koalas",e:"🐨",f:1,h:0.7,w:12,fact:"Koalas sleep about 20 hours a day."},
+  {n:"a golden retriever",p:"golden retrievers",e:"🐕‍🦺",f:0,h:0.56,w:30},
+  {n:"an emperor penguin",p:"emperor penguins",e:"🐧",f:1,h:1.15,w:30},
+  {n:"a giant panda",p:"giant pandas",e:"🐼",f:1,h:0.75,w:100,fact:"A giant panda eats around 28 pounds of bamboo every day."},
+  {n:"an alpaca",p:"alpacas",e:"🦙",f:1,h:0.9,w:70},
+  {n:"a horse",p:"horses",e:"🐴",f:0,h:1.6,w:500},
+  {n:"a grizzly bear",p:"grizzly bears",e:"🐻",f:1,h:1,w:270,fact:"A grizzly bear can smell food from more than a mile away."},
+  {n:"a polar bear",p:"polar bears",e:"🐻‍❄️",f:1,h:1.3,w:450},
+  {n:"a moose",p:"moose",e:"🦌",f:1,h:1.9,w:450},
+  {n:"a giraffe",p:"giraffes",e:"🦒",f:1,h:5.5,w:1200,fact:"A giraffe's neck alone weighs about 600 pounds."},
+  {n:"an African elephant",p:"African elephants",e:"🐘",f:1,h:3.2,w:5400},
+  {n:"a T. rex",p:"T. rexes",e:"🦖",f:2,h:4,w:8000},
+  {n:"a blue whale",p:"blue whales",e:"🐋",f:2,h:25,w:150000,fact:"A blue whale's heart is roughly the size of a small car."},
+
+  /* ---------- food ---------- */
+  {n:"a grain of rice",p:"grains of rice",e:"🌾",f:0,h:0.002,ho:"lying flat",h2:0.007,h2o:"standing on its end",w:0.000029},
+  {n:"an M&M",p:"M&Ms",e:"🍬",f:0,h:0.005,ho:"lying flat",h2:0.0135,h2o:"standing on its edge",w:0.0009},
+  {n:"a sugar cube",p:"sugar cubes",e:"🧊",f:0,h:0.012,w:0.004},
+  {n:"a blueberry",p:"blueberries",e:"🫐",f:0,h:0.012,w:0.0015},
+  {n:"a jelly bean",p:"jelly beans",e:"🍬",f:0,h:0.01,ho:"lying flat",h2:0.02,h2o:"standing on its end",w:0.0011},
+  {n:"a gummy bear",p:"gummy bears",e:"🧸",f:0,h:0.02,w:0.0026},
+  {n:"a raspberry",p:"raspberries",e:"🍓",f:0,h:0.02,w:0.004},
+  {n:"a macaron",p:"macarons",e:"🍪",f:0,h:0.02,ho:"lying flat",h2:0.045,h2o:"standing on its edge",w:0.02},
+  {n:"a marshmallow",p:"marshmallows",e:"🍡",f:0,h:0.025,w:0.0072},
+  {n:"a grape",p:"grapes",e:"🍇",f:0,h:0.022,w:0.005},
+  {n:"a strawberry",p:"strawberries",e:"🍓",f:0,h:0.04,w:0.012},
+  {n:"an Oreo",p:"Oreos",e:"🍪",f:0,h:0.0085,ho:"lying flat",h2:0.045,h2o:"standing on its edge",w:0.0114,fact:"About 40 billion Oreos are made every year."},
+  {n:"a chocolate chip cookie",p:"chocolate chip cookies",e:"🍪",f:0,h:0.01,ho:"lying flat",h2:0.06,h2o:"standing on its edge",w:0.016},
+  {n:"a pancake",p:"pancakes",e:"🥞",f:0,h:0.008,ho:"lying flat",h2:0.15,h2o:"standing on its edge",w:0.05},
+  {n:"an egg",p:"eggs",e:"🥚",f:0,h:0.057,ho:"standing on its end",w:0.05},
+  {n:"a donut",p:"donuts",e:"🍩",f:0,h:0.033,ho:"lying flat",h2:0.089,h2o:"standing on its edge",w:0.06},
+  {n:"a croissant",p:"croissants",e:"🥐",f:0,h:0.06,w:0.06},
+  {n:"a cupcake",p:"cupcakes",e:"🧁",f:0,h:0.08,w:0.08},
+  {n:"a lemon",p:"lemons",e:"🍋",f:0,h:0.07,w:0.1},
+  {n:"an orange",p:"oranges",e:"🍊",f:0,h:0.08,w:0.15},
+  {n:"an apple",p:"apples",e:"🍎",f:0,h:0.08,w:0.18},
+  {n:"a banana",p:"bananas",e:"🍌",f:0,w:0.12},
+  {n:"a slice of pizza",p:"slices of pizza",e:"🍕",f:0,h:0.02,ho:"lying flat",w:0.1},
+  {n:"a scoop of ice cream",p:"scoops of ice cream",e:"🍨",f:0,h:0.055,w:0.066},
+  {n:"a loaf of bread",p:"loaves of bread",e:"🍞",f:0,h:0.12,w:0.68},
+  {n:"a baguette",p:"baguettes",e:"🥖",f:0,h:0.6,ho:"standing on its end",h2:0.06,h2o:"lying flat",w:0.25},
+  {n:"a two-layer birthday cake",p:"two-layer birthday cakes",e:"🎂",f:0,h:0.15,w:1.8},
+  {n:"a pineapple",p:"pineapples",e:"🍍",f:0,h:0.3,w:1.5},
+  {n:"a watermelon",p:"watermelons",e:"🍉",f:0,h:0.3,w:9},
+
+  /* ---------- famous paintings (canvas height) ---------- */
+  {n:"The Great Wave off Kanagawa",p:"copies of The Great Wave",e:"🌊",f:2,h:0.257,ho:"hanging on a wall",fact:"The Great Wave is a woodblock print — thousands were made, and it is only about 10 inches tall."},
+  {n:"Girl with a Pearl Earring",p:"copies of Girl with a Pearl Earring",e:"🖼️",f:2,h:0.445,ho:"hanging on a wall"},
+  {n:"The Starry Night",p:"copies of The Starry Night",e:"🌌",f:2,h:0.737,ho:"hanging on a wall",fact:"Van Gogh painted The Starry Night from the window of his room at an asylum."},
+  {n:"the Mona Lisa",p:"Mona Lisas",e:"🖼️",f:2,h:0.77,ho:"hanging on a wall",fact:"The Mona Lisa is far smaller than people expect — about 30 inches tall."},
+  {n:"American Gothic",p:"copies of American Gothic",e:"🧑‍🌾",f:2,h:0.78,ho:"hanging on a wall"},
+  {n:"The Scream",p:"copies of The Scream",e:"😱",f:2,h:0.91,ho:"hanging on a wall"},
+  {n:"The Birth of Venus",p:"copies of The Birth of Venus",e:"🐚",f:2,h:1.726,ho:"hanging on a wall"},
+  {n:"a Water Lilies panel",p:"Water Lilies panels",e:"🪷",f:2,h:2,ho:"hanging on a wall"},
+  {n:"La Grande Jatte",p:"copies of La Grande Jatte",e:"⛱️",f:2,h:2.08,ho:"hanging on a wall",fact:"Seurat built La Grande Jatte out of millions of tiny dots of paint."},
+  {n:"Las Meninas",p:"copies of Las Meninas",e:"👑",f:2,h:3.18,ho:"hanging on a wall"},
+  {n:"Guernica",p:"copies of Guernica",e:"🕊️",f:2,h:3.49,ho:"hanging on a wall"},
+  {n:"The Night Watch",p:"copies of The Night Watch",e:"🌙",f:2,h:3.63,ho:"hanging on a wall"},
+  {n:"The Last Supper",p:"copies of The Last Supper",e:"🍷",f:2,h:4.6,ho:"hanging on a wall",fact:"The Last Supper is painted straight onto a monastery wall, so it can never be moved."},
+
+  /* ---------- school ---------- */
+  {n:"a sheet of paper",p:"sheets of paper",e:"📄",f:0,h:0.0001,ho:"lying flat",h2:0.279,h2o:"standing on its long edge",w:0.0045},
+  {n:"a paper clip",p:"paper clips",e:"📎",f:0,h:0.033,ho:"standing on its end",h2:0.001,h2o:"lying flat",w:0.001},
+  {n:"an eraser",p:"erasers",e:"🧽",f:0,h:0.0114,ho:"lying flat",h2:0.0635,h2o:"standing on its end",w:0.012},
+  {n:"a piece of chalk",p:"pieces of chalk",e:"🖍️",f:0,h:0.08,ho:"standing on its end",h2:0.01,h2o:"lying flat",w:0.011},
+  {n:"a crayon",p:"crayons",e:"🖍️",f:0,h:0.092,ho:"standing on its end",h2:0.008,h2o:"lying flat",w:0.006},
+  {n:"a glue stick",p:"glue sticks",e:"🧴",f:0,h:0.095,ho:"standing on its end",h2:0.021,h2o:"lying flat",w:0.04},
+  {n:"a marker",p:"markers",e:"🖊️",f:0,h:0.14,ho:"standing on its end",h2:0.013,h2o:"lying flat",w:0.012},
+  {n:"a #2 pencil",p:"#2 pencils",e:"✏️",f:0,h:0.19,ho:"standing on its end",h2:0.007,h2o:"lying flat",w:0.0068,fact:"One pencil can draw a line about 35 miles long."},
+  {n:"a pair of scissors",p:"pairs of scissors",e:"✂️",f:0,h:0.2,ho:"standing on its end",h2:0.008,h2o:"lying flat",w:0.06},
+  {n:"a 12-inch ruler",p:"12-inch rulers",e:"📏",f:0,h:0.305,ho:"standing on its end",h2:0.003,h2o:"lying flat",w:0.03},
+  {n:"a notebook",p:"notebooks",e:"📓",f:0,h:0.01,ho:"lying flat",h2:0.246,h2o:"standing on its end",w:0.2},
+  {n:"a textbook",p:"textbooks",e:"📘",f:0,h:0.04,ho:"lying flat",h2:0.28,h2o:"standing on its end",w:1.6},
+  {n:"a Chromebook",p:"Chromebooks",e:"💻",f:0,h:0.018,ho:"closed and lying flat",h2:0.21,h2o:"standing on its edge",w:1.1},
+  {n:"a lunchbox",p:"lunchboxes",e:"🍱",f:0,h:0.22,ho:"sitting flat"},
+  {n:"a backpack",p:"backpacks",e:"🎒",f:0,h:0.45,ho:"standing upright"},
+  {n:"a school desk",p:"school desks",e:"🪑",f:0,h:0.762,fact:"School and office desks are built to a standard 30-inch height almost everywhere in the world."},
+
+  /* ---------- sports ---------- */
+  {n:"a ping pong ball",p:"ping pong balls",e:"🏓",f:0,h:0.04,w:0.0027},
+  {n:"a golf ball",p:"golf balls",e:"⛳",f:0,h:0.0427,w:0.0459,fact:"A golf ball has about 336 dimples."},
+  {n:"a tennis ball",p:"tennis balls",e:"🎾",f:0,h:0.067,w:0.058},
+  {n:"a baseball",p:"baseballs",e:"⚾",f:0,h:0.075,w:0.145},
+  {n:"a hockey puck",p:"hockey pucks",e:"🏒",f:0,h:0.025,ho:"lying flat",h2:0.076,h2o:"standing on its edge",w:0.17},
+  {n:"a volleyball",p:"volleyballs",e:"🏐",f:0,h:0.21,w:0.27},
+  {n:"a size 5 soccer ball",p:"size 5 soccer balls",e:"⚽",f:0,h:0.22,w:0.43},
+  {n:"a basketball",p:"basketballs",e:"🏀",f:0,h:0.24,w:0.62},
+  {n:"a football",p:"footballs",e:"🏈",f:0,h:0.28,ho:"standing on its point",h2:0.17,h2o:"lying on its side",w:0.41},
+  {n:"a 16-pound bowling ball",p:"16-pound bowling balls",e:"🎳",f:0,h:0.218,w:7.26,fact:"16 pounds is the heaviest ball the rules allow."},
+  {n:"a 10-pound dumbbell",p:"10-pound dumbbells",e:"🏋️",f:0,h:0.11,ho:"lying flat",h2:0.35,h2o:"standing on its end",w:4.5},
+  {n:"a tennis racket",p:"tennis rackets",e:"🎾",f:0,h:0.685,ho:"standing on its end",h2:0.025,h2o:"lying flat",w:0.3},
+  {n:"a baseball bat",p:"baseball bats",e:"🏏",f:0,h:0.84,ho:"standing on its end",h2:0.067,h2o:"lying flat",w:0.9},
+  {n:"a skateboard",p:"skateboards",e:"🛹",f:0,h:0.8,ho:"standing on its end",h2:0.1,h2o:"lying flat on its wheels",w:3},
+  {n:"a bicycle",p:"bicycles",e:"🚲",f:0,h:1,ho:"standing on its wheels",w:10},
+  {n:"a surfboard",p:"surfboards",e:"🏄",f:1,h:2.1,ho:"standing on its end",h2:0.07,h2o:"lying flat",w:3.6},
+  {n:"a soccer goal",p:"soccer goals",e:"🥅",f:0,h:2.44,w:70},
+  {n:"a basketball hoop",p:"basketball hoops",e:"🏀",f:0,h:3.05,w:90},
+
+  /* ---------- jewelry ---------- */
+  {n:"a 1-carat diamond",p:"1-carat diamonds",e:"💎",f:1,h:0.0065,w:0.0002,fact:"A 1-carat diamond weighs exactly 0.2 grams."},
+  {n:"a pearl",p:"pearls",e:"🦪",f:0,h:0.008,w:0.0007},
+  {n:"a gold wedding ring",p:"gold wedding rings",e:"💍",f:0,h:0.006,ho:"lying flat",h2:0.02,h2o:"standing on its edge",w:0.005},
+  {n:"the Hope Diamond",p:"Hope Diamonds",e:"💠",f:2,h:0.0255,w:0.00905,fact:"The Hope Diamond is 45.52 carats and glows red for a few seconds after ultraviolet light."},
+  {n:"the Imperial State Crown",p:"Imperial State Crowns",e:"👑",f:2,h:0.315,w:1.06,fact:"The Imperial State Crown holds 2,868 diamonds."},
+  {n:"a 1-ounce gold coin",p:"1-ounce gold coins",e:"🪙",f:0,h:0.00287,ho:"lying flat",h2:0.0327,h2o:"standing on its edge",w:0.03393},
+  {n:"an Olympic gold medal",p:"Olympic gold medals",e:"🥇",f:1,h:0.0092,ho:"lying flat",h2:0.085,h2o:"standing on its edge",w:0.529,fact:"An Olympic “gold” medal is mostly silver — only about 6 grams of it is gold."},
+  {n:"the Koh-i-Noor diamond",p:"Koh-i-Noor diamonds",e:"💎",f:2,h:0.013,w:0.02112},
+  {n:"the Cullinan I diamond",p:"Cullinan I diamonds",e:"💎",f:2,h:0.0277,w:0.10608,fact:"Cullinan I, the Great Star of Africa, is 530 carats — the largest clear cut diamond in the world."},
+
+  /* ---------- musical instruments ---------- */
+  {n:"a harmonica",p:"harmonicas",e:"🎵",f:0,h:0.028,ho:"lying flat",h2:0.1,h2o:"standing on its end",w:0.1},
+  {n:"a snare drum",p:"snare drums",e:"🥁",f:0,h:0.15,ho:"lying flat",w:4},
+  {n:"a recorder",p:"recorders",e:"🎶",f:0,h:0.33,ho:"standing on its end",h2:0.022,h2o:"lying flat",w:0.1},
+  {n:"a trumpet",p:"trumpets",e:"🎺",f:0,h:0.48,ho:"standing on its bell",h2:0.125,h2o:"lying flat",w:1.1},
+  {n:"a ukulele",p:"ukuleles",e:"🪕",f:0,h:0.53,ho:"standing upright",w:0.5},
+  {n:"a violin",p:"violins",e:"🎻",f:0,h:0.6,ho:"standing upright",w:0.45,fact:"A violin is held together mostly by glue — a good one has over 70 separate pieces of wood."},
+  {n:"a flute",p:"flutes",e:"🎼",f:0,h:0.67,ho:"standing on its end",h2:0.019,h2o:"lying flat",w:0.4},
+  {n:"an acoustic guitar",p:"acoustic guitars",e:"🎸",f:0,h:1,ho:"standing upright",w:2},
+  {n:"a tuba",p:"tubas",e:"🎺",f:1,h:1.1,ho:"standing upright",w:10},
+  {n:"a cello",p:"cellos",e:"🎻",f:1,h:1.22,ho:"standing upright",w:3.5},
+  {n:"an upright piano",p:"upright pianos",e:"🎹",f:1,h:1.3,w:230},
+  {n:"a 7-foot grand piano",p:"7-foot grand pianos",e:"🎹",f:1,h:1,w:400,fact:"A grand piano's strings pull on its frame with about 20 tons of tension."},
+  {n:"a harp",p:"harps",e:"🎶",f:1,h:1.8,ho:"standing upright",w:36},
+  {n:"a double bass",p:"double basses",e:"🎻",f:1,h:1.9,ho:"standing upright",w:11},
+
+  /* ---------- big things & landmarks ---------- */
+  {n:"a Honda Civic",p:"Honda Civics",e:"🚗",f:0,h:1.415,w:1340},
+  {n:"a school bus",p:"school buses",e:"🚌",f:0,h:3,w:11000},
+  {n:"a two-story house",p:"two-story houses",e:"🏠",f:0,h:8},
+  {n:"a telephone pole",p:"telephone poles",e:"🪵",f:0,h:12,ho:"standing upright"},
+  {n:"a Hollywood Sign letter",p:"Hollywood Sign letters",e:"🔠",f:2,h:13.7},
+  {n:"a Mount Rushmore head",p:"Mount Rushmore heads",e:"🗿",f:2,h:18},
+  {n:"a Boeing 747",p:"Boeing 747s",e:"✈️",f:1,h:19.4,w:183500},
+  {n:"Christ the Redeemer",p:"Christ the Redeemer statues",e:"🗽",f:2,h:30,w:635000},
+  {n:"the Leaning Tower of Pisa",p:"Leaning Towers of Pisa",e:"🏛️",f:2,h:56,w:14500000,fact:"The Leaning Tower started tilting while it was still being built, because the ground underneath is soft."},
+  {n:"General Sherman the giant sequoia",p:"General Shermans",e:"🌲",f:1,h:83.8,w:1900000,fact:"General Sherman is the largest tree on Earth by volume — about 275 feet tall, and still growing."},
+  {n:"the Statue of Liberty",p:"Statues of Liberty",e:"🗽",f:2,h:93,w:204000},
+  {n:"the Big Ben tower",p:"Big Ben towers",e:"🕰️",f:2,h:96},
+  {n:"the London Eye",p:"London Eyes",e:"🎡",f:2,h:135},
+  {n:"the Great Pyramid of Giza",p:"Great Pyramids of Giza",e:"🔺",f:2,h:139,w:5900000000,fact:"The Great Pyramid was the tallest building on Earth for about 3,800 years."},
+  {n:"the Washington Monument",p:"Washington Monuments",e:"🏛️",f:2,h:169,w:82000000},
+  {n:"the Space Needle",p:"Space Needles",e:"🗼",f:2,h:184},
+  {n:"the Gateway Arch",p:"Gateway Arches",e:"🌉",f:2,h:192,w:17000000},
+  {n:"a Golden Gate Bridge tower",p:"Golden Gate Bridge towers",e:"🌉",f:2,h:227},
+  {n:"the Eiffel Tower",p:"Eiffel Towers",e:"🗼",f:2,h:330,w:10100000,fact:"The Eiffel Tower grows about 6 inches taller on a hot day, because iron expands in heat."},
+  {n:"the Empire State Building",p:"Empire State Buildings",e:"🏢",f:2,h:443,w:331000000,fact:"The Empire State Building has 6,514 windows and 73 elevators."},
+  {n:"the Burj Khalifa",p:"Burj Khalifas",e:"🏙️",f:2,h:828,w:500000000},
+  {n:"Mount Everest",p:"Mount Everests",e:"🏔️",f:2,h:8849,fact:"Mount Everest grows about a quarter of an inch taller every year."},
+
+  /* ---------- containers (volume) ---------- */
+  {n:"a teaspoon",p:"teaspoons",e:"🥄",f:0,v:0.00493},
+  {n:"a tablespoon",p:"tablespoons",e:"🥄",f:0,v:0.0148},
+  {n:"a shot glass",p:"shot glasses",e:"🥃",f:0,v:0.044},
+  {n:"a juice box",p:"juice boxes",e:"🧃",f:0,v:0.2},
+  {n:"a measuring cup",p:"measuring cups",e:"🥛",f:0,v:0.237},
+  {n:"a soda can",p:"soda cans",e:"🥤",f:0,v:0.355,h:0.122,ho:"standing upright",w:0.39},
+  {n:"a water bottle",p:"water bottles",e:"💧",f:0,v:0.5,h:0.22,ho:"standing upright",w:0.5},
+  {n:"a milk jug",p:"milk jugs",e:"🥛",f:0,v:3.785,h:0.28,ho:"standing upright",w:3.9},
+  {n:"a 5-gallon bucket",p:"5-gallon buckets",e:"🪣",f:0,v:18.9,h:0.37,ho:"standing upright"},
+  {n:"a 40-gallon water heater",p:"40-gallon water heaters",e:"♨️",f:0,v:151.4},
+  {n:"a 55-gallon drum",p:"55-gallon drums",e:"🛢️",f:0,v:208.2},
+  {n:"a 10-gallon fish tank",p:"10-gallon fish tanks",e:"🐠",f:0,v:37.85},
+  {n:"a standard bathtub",p:"standard bathtubs",e:"🛁",f:0,v:300},
+  {n:"an Olympic swimming pool",p:"Olympic swimming pools",e:"🏊",f:1,v:2500000,fact:"An Olympic pool holds about 660,000 gallons — enough for 9,000 bathtubs."},
+
+  /* ---------- durations (time) ----------
+     Only spans with a definition behind them: a rule of the game, a published
+     runtime, a recipe step, a physical constant. Anything whose real-world
+     range is wider than the bullseye band (a marathon, recess, a commercial
+     break, "a pop song") was cut rather than averaged.
+     `n` is the phrase that follows "as long as" AND the subject of the hint
+     line; `p` is the countable plural. No `p` means it can only be a target. */
+  {n:"a blink",p:"blinks",e:"\ud83d\udc41\ufe0f",f:0,t:0.3,tv:"is about"},
+  {n:"one resting heartbeat",p:"heartbeats",e:"\ud83d\udc93",f:0,t:0.83,tv:"is about",fact:"A resting heart beats about 72 times a minute \u2014 a child's beats faster than that."},
+  {n:"the 100-meter world record",e:"\ud83c\udfc3",f:1,t:9.58,tv:"is",fact:"Usain Bolt ran 100 meters in 9.58 seconds in 2009, and nobody has beaten it since."},
+  {n:"brushing your teeth the way dentists say to",e:"\ud83e\udea5",f:0,t:120,tv:"takes"},
+  {n:"cooking a bag of microwave popcorn",e:"\ud83c\udf7f",f:0,t:180,tv:"takes about"},
+  {n:"the song \u201cShake It Off\u201d",p:"plays of \u201cShake It Off\u201d",e:"\ud83c\udfb5",f:0,t:219,tv:"runs"},
+  {n:"the song \u201cBohemian Rhapsody\u201d",p:"plays of \u201cBohemian Rhapsody\u201d",e:"\ud83c\udfb8",f:1,t:355,tv:"runs",fact:"Bohemian Rhapsody is 5 minutes 55 seconds \u2014 radio stations said it was far too long to be a hit."},
+  {n:"an episode of Bluey",p:"episodes of Bluey",e:"\ud83d\udc36",f:0,t:420,tv:"runs"},
+  {n:"sunlight's trip from the Sun to Earth",e:"\u2600\ufe0f",f:1,t:499,tv:"takes",fact:"Light from the Sun takes 8 minutes 19 seconds to reach us \u2014 you always see the Sun as it was, never as it is."},
+  {n:"hard-boiling an egg",e:"\ud83e\udd5a",f:0,t:600,tv:"takes about"},
+  {n:"a quarter of an American football game",p:"quarters of an American football game",e:"\ud83c\udfc8",f:0,t:900,tv:"is"},
+  {n:"an episode of Victorious",p:"episodes of Victorious",e:"\ud83c\udfa4",f:0,t:1320,tv:"runs about"},
+  {n:"an NBA game",p:"NBA games",e:"\ud83c\udfc0",f:0,t:2880,tv:"is",fact:"An NBA game is four 12-minute quarters \u2014 48 minutes of actual clock."},
+  {n:"a soccer match",p:"soccer matches",e:"\u26bd",f:0,t:5400,tv:"is"},
+  {n:"the movie Frozen",p:"showings of Frozen",e:"\u2744\ufe0f",f:0,t:6120,tv:"runs"},
+  {n:"the movie Titanic",p:"showings of Titanic",e:"\ud83d\udea2",f:1,t:11640,tv:"runs"},
+  {n:"a nonstop flight from New York to Los Angeles",p:"flights from New York to Los Angeles",e:"\ud83d\udeeb",f:1,t:21600,tv:"takes about"},
+  {n:"a school day",p:"school days",e:"\ud83c\udfeb",f:0,t:23400,tv:"is about"},
+  {n:"the extended Lord of the Rings trilogy",p:"Lord of the Rings marathons",e:"\ud83d\udc8d",f:2,t:41160,tv:"runs",fact:"All three extended editions back to back run 11 hours and 26 minutes."},
+  {n:"one day",p:"days",e:"\ud83d\udcc5",f:0,t:86400,tv:"is"},
+  {n:"all the class time in one school year",p:"school years of class time",e:"\ud83c\udf93",f:0,t:4212000,tv:"adds up to about",fact:"A U.S. school year is about 180 days of roughly 6.5 hours each \u2014 under 50 full days if you ran them back to back."},
+  {n:"summer vacation",p:"summer vacations",e:"\u2600\ufe0f",f:0,t:6048000,tv:"is about"},
+  {n:"one year",p:"years",e:"\ud83d\uddd3\ufe0f",f:0,t:31557600,tv:"is"},
+  {n:"an average human lifetime",p:"human lifetimes",e:"\ud83e\uddd3",f:1,t:2524608000,tv:"is about"}
+];
+
+/* ---------------------- difficulty bands ----------------------
+   Everyone gets the SAME question every day. The age band changes only how
+   much help you get, and whether you drag the number or type it. Scoring
+   tolerance is deliberately identical for all three: if a 7-year-old's
+   "bullseye" were looser than a grown-up's, a shared score would not mean
+   the same thing from one player to the next. */
+const BANDS = {
+  "6-9":   {label:"6 \u2013 9",  blurb:"The first measurement is always shown to you.",  input:"slider", hint:"always"},
+  "10-12": {label:"10 \u2013 12",blurb:"A hint is there if you want it \u2014 tap to reveal.", input:"slider", hint:"ondemand"},
+  "13+":   {label:"13 +",     blurb:"No hints, and you type the number yourself.",   input:"number", hint:"never"}
+};
+
+/* One rule for every player. */
+const RULE = {sliderMax:1e6, minAnswer:20, maxAnswer:1e5,
+              perfect:2.5, great:6, ok:15, famWeight:[3,3,2]};
+
+/* A "measure" is an object paired with one specific orientation: a paper clip
+   lying flat and a paper clip standing on its end are two different measures
+   with two different answers, so the sentence always says which one it means. */
+const qMid = m => m.or ? `, ${m.or},` : "";
+const qEnd = m => m.or ? `, ${m.or}` : "";
+const val = (m,k) => {
+  const v = (typeof m.val==="number") ? m.val : m[k];
+  return (typeof v==="number" && isFinite(v) && v>0) ? v : null;
+};
+
+const UNITS = {
+  h:{key:"h", word:"Height", glyph:"\ud83d\udccf",
+     ask:(i,t)=>`How many ${i.p} stacked on top of each other would be as tall as ${t.n}?`,
+     say:(m)=>{const v=val(m,"h"); return v===null?"":`${cap(m.n)}${qMid(m)} is about ${fmtLen(v)} tall.`;}},
+  w:{key:"w", word:"Weight", glyph:"\u2696\ufe0f",
+     ask:(i,t)=>`How many ${i.p} would it take to weigh as much as ${t.n}?`,
+     say:(m)=>{const v=val(m,"w"); return v===null?"":`${cap(m.n)} weighs about ${fmtMass(v)}.`;}},
+  v:{key:"v", word:"Volume", glyph:"\ud83e\udea3",
+     ask:(i,t)=>`How many ${i.p} of water would it take to fill ${t.n}?`,
+     say:(m)=>{const v=val(m,"v"); return v===null?"":`${cap(m.n)} holds about ${fmtVol(v)}.`;}},
+  t:{key:"t", word:"Time", glyph:"\u23f3",
+     ask:(i,t)=>`How many ${i.p} would take as long as ${t.n}?`,
+     say:(m)=>{const v=val(m,"t"); return v===null?"":`${cap(m.n)} ${m.tv||"takes about"} ${fmtTime(v)}.`;}}
+};
+const UNIT_PICK = ["h","h","h","h","w","w","w","w","v","t","t","t"];
+
+/* ---------------------- formatting ---------------------- */
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function sig(x){
+  if(typeof x!=="number"||!isFinite(x)) return "?";
+  if(x>=1000) return Math.round(x).toLocaleString("en-US");
+  if(x>=100) return Math.round(x).toString();
+  if(x>=10) return (Math.round(x*10)/10).toString();
+  if(x>=1) return (Math.round(x*10)/10).toString();
+  return parseFloat(x.toPrecision(2)).toString();
+}
+function plural(val,word){ return sig(val)+" "+word+(Math.round(val*10)/10===1?"":"s"); }
+
+function fmtCount(n){
+  if(n>=1e12) return sig(n/1e12)+" trillion";
+  if(n>=1e9)  return sig(n/1e9)+" billion";
+  if(n>=1e6)  return sig(n/1e6)+" million";
+  if(n>=1)    return Math.round(n).toLocaleString("en-US");
+  return parseFloat(n.toPrecision(2)).toString();
+}
+function fmtLen(m){
+  const inch=m*39.3701;
+  if(inch<24) return sig(inch)+" in";
+  const ft=m*3.28084;
+  if(ft<5280) return sig(ft)+" ft";
+  return plural(ft/5280,"mile");
+}
+function fmtMass(kg){
+  if(kg<0.001) return sig(kg*1000)+" g";
+  const oz=kg*35.274;
+  if(oz<16) return sig(oz)+" oz";
+  const lb=kg*2.20462;
+  if(lb<2000) return sig(lb)+" lb";
+  return plural(lb/2000,"ton");
+}
+function fmtVol(L){
+  const floz=L*33.814;
+  if(floz<64) return sig(floz)+" fl oz";
+  return plural(L*0.264172,"gallon");
+}
+function fmtTime(s){
+  if(s<60) return plural(s,"second");
+  if(s<3600) return plural(s/60,"minute");
+  if(s<172800) return plural(s/3600,"hour");
+  if(s<3.0e7) return plural(s/86400,"day");
+  return plural(s/31557600,"year");
+}
+
+/* ---------------------- question generation ---------------------- */
+const MEASURES={};
+function measures(u){
+  if(MEASURES[u]) return MEASURES[u];
+  const out=[];
+  for(const o of OBJECTS){
+    if(typeof o[u]==="number") out.push({...o, val:o[u], or:(u==="h"?(o.ho||null):null)});
+    if(u==="h" && typeof o.h2==="number") out.push({...o, val:o.h2, or:o.h2o||null});
+  }
+  return (MEASURES[u]=out);
+}
+
+/* A question is only worth asking if the thing you are measuring UP TO is
+   worth picturing. Targets come from the largest 40% of each unit's pool,
+   which is what separates "as tall as the Space Needle" from "as tall as a
+   pancake". */
+const FLOORS={};
+function targetFloor(u){
+  if(FLOORS[u]!==undefined) return FLOORS[u];
+  const vals=measures(u).map(m=>m.val).sort((x,y)=>x-y);
+  return (FLOORS[u]=vals[Math.floor(vals.length*0.6)]);
+}
+function weightOf(o){ return RULE.famWeight[o.f]; }
+function pickWeighted(list){
+  let total=0; for(const o of list) total+=weightOf(o);
+  let r=Math.random()*total;
+  for(const o of list){ r-=weightOf(o); if(r<=0) return o; }
+  return list[list.length-1];
+}
+
+/* ---- the daily puzzle ----
+   Every player, anywhere, gets the same question on the same date with no
+   server involved. The year's schedule is a deterministic shuffle of every
+   valid pairing, so a day's question is a pure function of its number, and
+   a pairing never repeats until its whole list has been used. */
+const EPOCH = Date.UTC(2026,9,26);   // launch day \u2014 October 26, 2026 is puzzle #1
+function puzzleNumber(d){
+  d = d || new Date();
+  return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-EPOCH)/86400000)+1;
+}
+function mulberry32(a){
+  return function(){ a|=0; a=a+0x6D2B79F5|0;
+    let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t;
+    return ((t^t>>>14)>>>0)/4294967296; };
+}
+const WEEK=["h","w","t","h","v","w","t"];   // a week never repeats a unit back to back
+const SCHEDULE={};
+function schedule(u){
+  if(SCHEDULE[u]) return SCHEDULE[u];
+  const pool=measures(u), floor=targetFloor(u), out=[];
+  for(const t of pool){
+    if(t.val<floor) continue;
+    for(const i of pool){
+      if(!i.p || i.n===t.n) continue;
+      const r=t.val/i.val;
+      if(r>=RULE.minAnswer && r<=RULE.maxAnswer) out.push([i,t]);
+    }
+  }
+  const rnd=mulberry32((0x9E3779B9 ^ u.charCodeAt(0))>>>0);
+  for(let k=out.length-1;k>0;k--){ const j=Math.floor(rnd()*(k+1)); const tmp=out[k]; out[k]=out[j]; out[j]=tmp; }
+  return (SCHEDULE[u]=out);
+}
+function unitIndex(n,u){
+  const per=WEEK.filter(x=>x===u).length;
+  let c=Math.floor((n-1)/7)*per;
+  for(let i=0;i<(n-1)%7;i++) if(WEEK[i]===u) c++;
+  return c;
+}
+function dailyQuestion(n){
+  const u=WEEK[(n-1)%WEEK.length], list=schedule(u);
+  const pair=list[unitIndex(n,u)%list.length];
+  return {u, item:pair[0], target:pair[1], answer:pair[1].val/pair[0].val};
+}
+
+/* ---- practice questions: random, same quality bar ---- */
+function practiceQuestion(seen){
+  for(let attempt=0; attempt<400; attempt++){
+    const u=WEEK[Math.floor(Math.random()*WEEK.length)];
+    const pool=measures(u), floor=targetFloor(u);
+    const big=pool.filter(m=>m.val>=floor);
+    if(!big.length) continue;
+    const target=pickWeighted(big);
+    const items=pool.filter(m=>{
+      if(m.n===target.n || !m.p) return false;
+      const r=target.val/m.val;
+      return r>=RULE.minAnswer && r<=RULE.maxAnswer;
+    });
+    if(!items.length) continue;
+    const item=pickWeighted(items);
+    const key=u+"|"+item.n+"|"+item.or+"|"+target.n+"|"+target.or;
+    if(seen.has(key)||seen.has("t:"+target.n)) continue;
+    seen.add(key); seen.add("t:"+target.n);
+    return {u, item, target, answer: target.val/item.val};
+  }
+  return dailyQuestion(Math.floor(Math.random()*1000)+1);
+}
+
+/* ---------------------- scoring ---------------------- */
+function grade(guess,answer){
+  const r = guess>0 ? Math.max(guess/answer, answer/guess) : Infinity;
+  if(r<=RULE.perfect) return {label:"Bullseye",   pts:1000, tone:"good", r};
+  if(r<=RULE.great)   return {label:"Great guess",pts:600,  tone:"good", r};
+  if(r<=RULE.ok)      return {label:"Close",      pts:300,  tone:"warn", r};
+  if(r<=100)          return {label:"Off by a lot",pts:75,  tone:"warn", r};
+  return {label:"Way off", pts:0, tone:"bad", r};
+}
+
+/* ---------------------- storage ---------------------- */
+/* Where "can you beat it?" should point. When this page is the top-level
+   document — on any host, anywhere — its own address is the right link.
+   Inside the Artifact viewer the page runs in a frame whose address is not
+   shareable, and reading window.top across origins throws, so that throw is
+   exactly the signal to fall back to the published link. */
+const HOME_URL="https://claude.ai/artifact/R756J9tLjcPkXyrjuiTksX";
+function shareUrl(){
+  try{
+    if(window.top===window.self && /^https?:/.test(location.href))
+      return location.origin+location.pathname;
+  }catch(e){}
+  return HOME_URL;
+}
+const PRACTICE_LENGTH=5;
+function store(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function recall(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function recallJSON(k){ try{ return JSON.parse(recall(k)||"null"); }catch(e){ return null; } }
+function savedBand(){ const b=recall("hmo.band"); return BANDS[b]?b:null; }
+function todaysResult(){ const r=recallJSON("hmo.daily"); return (r&&r.n===puzzleNumber())?r:null; }
+function readStreak(){ return recallJSON("hmo.streak")||{last:0,count:0}; }
+function bumpStreak(n){
+  const s=readStreak();
+  if(s.last===n) return s;
+  const out={last:n, count:(s.last===n-1 ? s.count+1 : 1)};
+  store("hmo.streak",JSON.stringify(out));
+  return out;
+}
+
+/* ---------------------- state ---------------------- */
+let S=null;
+let showAges=false;   // set when the player backs out to change age group
+const card=document.getElementById("card");
+
+function startDaily(bandKey){
+  store("hmo.band",bandKey); showAges=false;
+  const n=puzzleNumber(), prev=todaysResult();
+  S={mode:"daily", bandKey, band:BANDS[bandKey], n, q:dailyQuestion(n),
+     phase: prev?"result":"play", guess: prev?prev.guess:null, hintShown:true};
+  // Changing age after you have answered must not hand you a second attempt.
+  if(!prev) resetGuess();
+  render();
+}
+function startPractice(bandKey){
+  showAges=false;
+  S={mode:"practice", bandKey, band:BANDS[bandKey], i:0, score:0,
+     results:[], seen:new Set(), phase:"play"};
+  S.q=practiceQuestion(S.seen);
+  resetGuess();
+  render();
+}
+function resetGuess(){
+  S.guess = S.band.input==="slider" ? roundNice(Math.sqrt(RULE.sliderMax)) : null;
+  S.sliderT = S.band.input==="slider" ? 500 : null;
+  S.hintShown = S.band.hint==="always";
+}
+
+/* ---------------------- log-slider mapping ---------------------- */
+function tToValue(t,max){ return Math.pow(10,(t/1000)*Math.log10(max)); }
+function roundNice(v){
+  if(v<10) return Math.max(1,Math.round(v));
+  const mag=Math.pow(10,Math.floor(Math.log10(v))-1);
+  return Math.round(v/mag)*mag;
+}
+function logPos(v,max){
+  const p=Math.log10(Math.max(v,1))/Math.log10(max);
+  return Math.min(100,Math.max(0,p*100));
+}
+function tickShort(e){
+  if(e>=9) return (e>9?Math.pow(10,e-9):1)+"B";
+  if(e>=6) return Math.pow(10,e-6)+"M";
+  if(e>=3) return Math.pow(10,e-3)+"K";
+  return String(Math.pow(10,e));
+}
+function tickLabels(max){
+  const top=Math.round(Math.log10(max));
+  const step=Math.max(1,Math.ceil(top/4));
+  const out=[];
+  for(let e=0;e<=top;e+=step) out.push(e);
+  if(out[out.length-1]!==top) out.push(top);
+  return out.map(tickShort);
+}
+
+/* ---------------------- screens ---------------------- */
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* Orientation is only disclosed when it changes the answer. */
+function orientNote(q){
+  const bits=[];
+  if(q.item.or)   bits.push(`${q.item.n} ${q.item.or}`);
+  if(q.target.or) bits.push(`${q.target.n} ${q.target.or}`);
+  if(!bits.length) return "";
+  return `<p class="orients">${bits.map(esc).join(" &middot; ")}</p>`;
+}
+function puzzleDate(){
+  return new Date().toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"});
+}
+
+function renderTitle(){
+  const n=puzzleNumber(), played=todaysResult(), s=readStreak();
+  const band=showAges?null:savedBand();
+  const streakLine = s.count>0 && (s.last===n||s.last===n-1)
+    ? `<p class="best-line">🔥 ${s.count}-day streak</p>` : "";
+  let action;
+  if(played){
+    action = `<button class="btn wide" id="seeResult">See today's result</button>
+              <button class="btn ghost wide" id="toPractice">Keep playing — practice mode</button>`;
+  } else if(band){
+    action = `<button class="btn wide" id="playNow">Play puzzle #${n}</button>
+              <p class="best-line">Playing as ages ${esc(BANDS[band].label)} &middot;
+                 <button class="hint-btn" id="changeAge">change</button></p>`;
+  } else {
+    action = `<p class="eyebrow" style="margin-bottom:10px">How old are you?</p>
+      <div class="ages">${Object.keys(BANDS).map(k=>`
+          <button class="age-btn" data-band="${k}" aria-label="Ages ${BANDS[k].label}">
+            <b>${BANDS[k].label}</b>
+          </button>`).join("")}</div>
+      <p class="best-line">Everyone gets the same puzzle. Age only changes how much help you get.</p>`;
+  }
+  card.innerHTML = `
+    <div class="body">
+      <div class="hero-mark">🍊 📏 🐻 ⏳</div>
+      <h1 class="title-h1">How Many <em>Oranges</em>?</h1>
+      <p class="eyebrow" style="margin:2px 0 12px">Puzzle #${n} &middot; ${puzzleDate()}</p>
+      <p class="lede">Compete against your friends and family in a game of estimation!</p>
+      ${streakLine}
+      <div style="margin-top:22px">${action}</div>
+    </div>`;
+
+  const on=(id,fn)=>{ const el=card.querySelector("#"+id); if(el) el.addEventListener("click",fn); };
+  card.querySelectorAll(".age-btn").forEach(b=>b.addEventListener("click",()=>startDaily(b.dataset.band)));
+  on("playNow",()=>startDaily(band));
+  on("changeAge",()=>{ showAges=true; render(); });
+  on("seeResult",()=>{
+    const r=todaysResult();
+    S={mode:"daily", bandKey:r.band, band:BANDS[r.band]||BANDS["10-12"], n, q:dailyQuestion(n),
+       phase:"result", guess:r.guess, hintShown:true};
+    render();
+  });
+  on("toPractice",()=>startPractice(savedBand()||"10-12"));
+}
+
+function topbar(){
+  // The way out is offered only while the question is still unanswered.
+  const label = S.mode==="daily" ? "Ages "+S.band.label : "Exit practice";
+  const left = S.phase==="play"
+    ? `<button class="backbtn" id="backBtn" aria-label="Go back and choose a different age group"><span class="chev" aria-hidden="true">\u2039</span>${esc(label)}</button>`
+    : `<div class="eyebrow">${esc(S.mode==="daily"?"Ages "+S.band.label:"Practice")}</div>`;
+  if(S.mode==="daily"){
+    return `<div class="topbar">${left}<div class="eyebrow">Puzzle #${S.n}</div></div>`;
+  }
+  let pips="";
+  for(let k=0;k<PRACTICE_LENGTH;k++){
+    const res=S.results[k];
+    pips+=`<i class="pip ${res?(res.pts>=600?"done":"miss"):(k===S.i?"now":"")}"></i>`;
+  }
+  return `<div class="topbar">
+    ${left}
+    <div class="pips">${pips}</div>
+    <div class="score-readout">${S.score.toLocaleString("en-US")} <span>pts</span></div>
+  </div>`;
+}
+
+let playKeys=null;
+function renderPlay(){
+  const {q,band}=S, U=UNITS[q.u];
+  const hintHTML = S.hintShown
+    ? `<div class="hint"><b>Hint:</b> ${esc(U.say(q.item))}</div>`
+    : (band.hint==="ondemand" ? `<div class="hint"><button class="hint-btn" id="hintBtn">Show me a hint</button></div>` : "");
+
+  const controls = band.input==="slider" ? `
+      <div class="guess-display" id="guessOut">${fmtCount(S.guess)}</div>
+      <div class="guess-unit">${esc(q.item.p)}</div>
+      <input type="range" id="slider" min="0" max="1000" step="1" value="${S.sliderT}"
+             aria-label="Your guess, from 1 to ${fmtCount(RULE.sliderMax)}">
+      <div class="ticks">${tickLabels(RULE.sliderMax).map(t=>`<span>${t}</span>`).join("")}</div>
+      <button class="btn wide" id="lockBtn">Lock it in</button>`
+    : `
+      <div class="guess-unit" style="margin-bottom:8px">Your guess, in ${esc(q.item.p)}</div>
+      <div class="numrow">
+        <input type="text" class="numinput" id="numinput" inputmode="numeric"
+               autocomplete="off" placeholder="0" aria-label="Your guess in ${esc(q.item.p)}">
+        <button class="btn" id="lockBtn" disabled>Lock in</button>
+      </div>`;
+
+  card.innerHTML = topbar()+`
+    <div class="body">
+      <span class="unit-chip">${U.glyph} ${U.word}</span>
+      <h2 class="question">${esc(U.ask(q.item,q.target))}</h2>
+      ${orientNote(q)}
+      <div class="glyphs">${q.item.e}<span class="arrow">how many &rarr;</span>${q.target.e}</div>
+      ${hintHTML}
+      <div class="guessbox">${controls}</div>
+    </div>`;
+
+  const lock=card.querySelector("#lockBtn"), hb=card.querySelector("#hintBtn");
+  if(hb) hb.addEventListener("click",()=>{ S.hintShown=true; render(); });
+
+  const goBack=()=>{ showAges=true; S=null; render(); };
+  card.querySelector("#backBtn").addEventListener("click",goBack);
+  document.removeEventListener("keydown",playKeys);
+  playKeys=e=>{ if(e.key==="Escape" && S && S.phase==="play") goBack(); };
+  document.addEventListener("keydown",playKeys);
+
+  if(band.input==="slider"){
+    const sl=card.querySelector("#slider"), out=card.querySelector("#guessOut");
+    const sync=()=>{ S.sliderT=+sl.value; S.guess=roundNice(tToValue(S.sliderT,RULE.sliderMax));
+                     out.textContent=fmtCount(S.guess); };
+    sl.addEventListener("input",sync); sync();
+    lock.addEventListener("click",submit);
+  } else {
+    const inp=card.querySelector("#numinput");
+    const parse=()=>{ const v=parseFloat(inp.value.replace(/[, ]/g,"")); return (isFinite(v)&&v>0)?v:null; };
+    inp.addEventListener("input",()=>{ lock.disabled=parse()===null; });
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"&&parse()!==null){ S.guess=parse(); submit(); } });
+    lock.addEventListener("click",()=>{ const v=parse(); if(v!==null){ S.guess=v; submit(); } });
+    inp.focus();
+  }
+}
+
+function submit(){
+  if(S.mode==="daily"){
+    const g=grade(S.guess,S.q.answer);
+    store("hmo.daily",JSON.stringify({n:S.n,guess:S.guess,pts:g.pts,band:S.bandKey}));
+    bumpStreak(S.n);
+    S.phase="result";
+  } else {
+    const g=grade(S.guess,S.q.answer);
+    S.score+=g.pts;
+    S.results[S.i]={...g, guess:S.guess, q:S.q};
+    S.phase="reveal";
+  }
+  render();
+}
+
+/* the log number line, shared by both result screens */
+function scaleHTML(guess,answer){
+  const max=RULE.sliderMax;
+  const lo=answer/RULE.perfect, hi=answer*RULE.perfect;
+  const bandL=logPos(lo,max), bandR=logPos(hi,max);
+  return `<div class="scale">
+      <div class="scale-track">
+        <div class="scale-band" style="left:${bandL}%;width:${Math.max(bandR-bandL,0.8)}%"></div>
+        <div class="marker ans" style="left:${logPos(answer,max)}%"><div class="dot"></div><div class="tag">answer</div></div>
+        <div class="marker you" style="left:${logPos(guess,max)}%"><div class="dot"></div><div class="tag">you</div></div>
+      </div>
+      <div class="scale-ends">${tickLabels(max).map(t=>`<span>${t}</span>`).join("")}</div>
+    </div>`;
+}
+function mathHTML(q,guess){
+  const U=UNITS[q.u];
+  const rows=[U.say(q.item),U.say(q.target)].filter(Boolean);
+  const g=[q.item.e,q.target.e];
+  return `<div class="math">
+      ${rows.map((r,k)=>`<div class="math-row"><span class="g">${g[k]}</span><span>${esc(r)}</span></div>`).join("")}
+      <div class="sum">You guessed ${fmtCount(guess)} &middot; the answer is ${fmtCount(q.answer)}</div>
+    </div>`;
+}
+function offByText(r){
+  return r<1.05 ? "spot on" : r<2 ? `off by ${(Math.round(r*10)/10)}×` : `off by ${fmtCount(Math.round(r))}×`;
+}
+
+/* ---- Wordle-style share: the number line, as eleven squares ---- */
+function shareStrip(guess,answer){
+  const cells=11, max=RULE.sliderMax;
+  const pos=v=>Math.min(cells-1,Math.max(0,Math.round(Math.log10(Math.max(v,1))/Math.log10(max)*(cells-1))));
+  const a=pos(answer), g=pos(guess);
+  let out="";
+  for(let i=0;i<cells;i++) out += (i===a&&i===g)?"🎯":(i===a?"🟩":(i===g?"🟥":"⬜"));
+  return out;
+}
+function shareText(q,guess,gr,n,streakCount){
+  const lines=[
+    `How Many Oranges #${n}`,
+    UNITS[q.u].ask(q.item,q.target),
+    shareStrip(guess,q.answer),
+    cap(offByText(gr.r)) + ` \u00b7 ${gr.pts} pts` + (streakCount>1?` \u00b7 \ud83d\udd25 ${streakCount} days`:""),
+    `Can you beat it? ${shareUrl()}`
+  ];
+  return lines.join("\n");
+}
+
+function renderDailyResult(){
+  const q=S.q, gr=grade(S.guess,q.answer), s=readStreak();
+  const fact=q.target.fact||q.item.fact;
+  const txt=shareText(q,S.guess,gr,S.n,s.count);
+  // On a public host anyone with the link can play; inside the Artifact
+  // viewer the link only opens for people the owner has shared it with.
+  const gated = shareUrl()===HOME_URL;
+  const note = gated ? "Anyone you send this to needs access to the puzzle link."
+                     : "Anyone with the link can play \u2014 no account needed.";
+  card.innerHTML = topbar()+`
+    <div class="body tone-${gr.tone}">
+      <div class="verdict">
+        <h2>${gr.label}</h2>
+        <span class="pts">${gr.pts} pts &middot; ${offByText(gr.r)}</span>
+      </div>
+      <p class="answer-line">It takes <b>${fmtCount(q.answer)}</b> ${esc(q.item.p)}.</p>
+      ${scaleHTML(S.guess,q.answer)}
+      ${mathHTML(q,S.guess)}
+      ${fact?`<div class="fact"><b>Also</b><br>${esc(fact)}</div>`:""}
+      <div class="share">
+        <div class="eyebrow" style="margin-bottom:8px">Share your score</div>
+        <pre class="share-text" id="shareText">${esc(txt)}</pre>
+        <button class="btn wide" id="copyBtn">Copy &amp; challenge a friend</button>
+        <p class="share-note" id="copyNote">${note}</p>
+      </div>
+      <button class="btn ghost wide" id="toPractice">Keep playing — practice mode</button>
+      <p class="best-line">Come back tomorrow for puzzle #${S.n+1}.</p>
+    </div>`;
+
+  card.querySelector("#copyBtn").addEventListener("click",async e=>{
+    const note=card.querySelector("#copyNote");
+    try{
+      await navigator.clipboard.writeText(txt);
+      e.target.textContent="Copied";
+      note.textContent="Paste it anywhere \u2014 text, email, chat.";
+    }catch(err){
+      // clipboard is often blocked in a sandboxed frame — select it instead
+      const pre=card.querySelector("#shareText");
+      const r=document.createRange(); r.selectNodeContents(pre);
+      const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      e.target.textContent="Select all — now press copy";
+      note.textContent="Your browser blocked the clipboard, so the text is selected for you.";
+    }
+  });
+  card.querySelector("#toPractice").addEventListener("click",()=>startPractice(S.bandKey));
+}
+
+function renderPracticeReveal(){
+  const q=S.q, res=S.results[S.i], fact=q.target.fact||q.item.fact;
+  card.innerHTML = topbar()+`
+    <div class="body tone-${res.tone}">
+      <div class="verdict">
+        <h2>${res.label}</h2>
+        <span class="pts">+${res.pts} pts &middot; ${offByText(res.r)}</span>
+      </div>
+      <p class="answer-line">It takes <b>${fmtCount(q.answer)}</b> ${esc(q.item.p)}.</p>
+      ${scaleHTML(S.guess,q.answer)}
+      ${mathHTML(q,S.guess)}
+      ${fact?`<div class="fact"><b>Also</b><br>${esc(fact)}</div>`:""}
+      <button class="btn wide" id="nextBtn">${S.i+1>=PRACTICE_LENGTH?"See your score":"Next question"}</button>
+    </div>`;
+  const nb=card.querySelector("#nextBtn");
+  nb.addEventListener("click",()=>{
+    S.i++;
+    if(S.i>=PRACTICE_LENGTH){ S.phase="summary"; }
+    else { S.q=practiceQuestion(S.seen); S.phase="play"; resetGuess(); }
+    render();
+  });
+  nb.focus();
+}
+
+function renderPracticeSummary(){
+  const max=PRACTICE_LENGTH*1000;
+  const bullseyes=S.results.filter(r=>r.pts===1000).length;
+  const pct=S.score/max;
+  const verdict = pct>=0.85 ? "You have a serious feel for scale."
+    : pct>=0.6 ? "Solid estimating. The big ones are getting away from you."
+    : pct>=0.35 ? "Right neighbourhood, wrong street."
+    : "Orders of magnitude are sneaky. Try the hints.";
+  card.innerHTML = `
+    <div class="topbar"><div class="eyebrow">Practice round complete</div>
+      <div class="eyebrow">Ages ${esc(S.band.label)}</div></div>
+    <div class="body">
+      <div class="final">${S.score.toLocaleString("en-US")}</div>
+      <div class="final-sub">out of ${max.toLocaleString("en-US")} &middot; ${bullseyes} bullseye${bullseyes===1?"":"s"}</div>
+      <p class="lede" style="margin-top:14px">${verdict}</p>
+      <div class="recap">
+        ${S.results.map(r=>`
+          <div class="recap-row">
+            <span class="g">${r.q.item.e}</span>
+            <span class="txt">${esc(r.q.item.p)}${r.q.item.or?" ("+esc(r.q.item.or)+")":""} &rarr; ${esc(r.q.target.n)}${r.q.target.or?" ("+esc(r.q.target.or)+")":""}<br>
+              you ${fmtCount(r.guess)} &middot; answer <b>${fmtCount(r.q.answer)}</b></span>
+            <span class="rk" style="color:var(--${r.tone==="good"?"good":r.tone==="warn"?"accent":"coral"})">${r.label}</span>
+          </div>`).join("")}
+      </div>
+      <div class="btnrow">
+        <button class="btn" id="again">Another round</button>
+        <button class="btn ghost" id="home">Back to today</button>
+      </div>
+    </div>`;
+  card.querySelector("#again").addEventListener("click",()=>startPractice(S.bandKey));
+  card.querySelector("#home").addEventListener("click",()=>{ S=null; render(); });
+}
+
+function render(){
+  if(!S) return renderTitle();
+  if(S.phase==="play") return renderPlay();
+  if(S.mode==="daily") return renderDailyResult();
+  if(S.phase==="reveal") return renderPracticeReveal();
+  return renderPracticeSummary();
+}
+
+/* ---- survive a republish without losing the run ---- */
+const SAVE_VERSION=4;
+function snapshot(){
+  if(!S) return {};
+  return {ver:SAVE_VERSION, mode:S.mode, bandKey:S.bandKey, n:S.n, i:S.i, score:S.score,
+          phase:S.phase, guess:S.guess, sliderT:S.sliderT, hintShown:S.hintShown,
+          q:S.q, results:S.results, seen:S.seen?[...S.seen]:[]};
+}
+function usableQuestion(q){
+  return !!q && !!q.item && !!q.target && !!UNITS[q.u]
+      && isFinite(q.answer) && q.answer>0
+      && val(q.item,q.u)!==null && val(q.target,q.u)!==null;
+}
+function start(data){
+  try{
+    if(data && data.ver===SAVE_VERSION && BANDS[data.bandKey] && usableQuestion(data.q)){
+      S={...data, band:BANDS[data.bandKey], seen:new Set(data.seen||[])};
+      return render();
+    }
+  }catch(e){}
+  S=null;
+  render();
+}
+try{ window.claude?.hot?.snapshot?.(snapshot); }catch(e){}
+if(window.claude?.hot?.ready) window.claude.hot.ready(start);
+else start(window.claude?.hot?.data ?? {});
+</script>
+
+</body>
+</html>
