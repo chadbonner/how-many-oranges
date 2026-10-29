@@ -782,7 +782,7 @@ function pickWeighted(list){
    server involved. The year's schedule is a deterministic shuffle of every
    valid pairing, so a day's question is a pure function of its number, and
    a pairing never repeats until its whole list has been used. */
-const EPOCH = Date.UTC(2026,9,26);   // launch day \u2014 October 26, 2026 is puzzle #1
+const EPOCH = Date.UTC(2026,9,28);   // launch day \u2014 October 28, 2026 is puzzle #1
 function puzzleNumber(d){
   d = d || new Date();
   return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-EPOCH)/86400000)+1;
